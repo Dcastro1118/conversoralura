@@ -1,5 +1,6 @@
 package com.conversor.consultas;
 
+import com.conversor.Conversor;
 import com.conversor.modelos.MonedasDisponibles;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -10,46 +11,54 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 public class Consultas {
-    String[] monedas = {};
+
+    ArrayList<String> monedas = new ArrayList<>();
     HttpClient client = HttpClient.newHttpClient();
     String direccion = "https://v6.exchangerate-api.com/v6/87bd9b17f46d2a4580299e29/";
+    Conversor conversor = new Conversor();
 
+    //  Este metodo de aqui se encarga de actualizar las listas de monedas a las disponibles.
 
-
-    void actualizarMonedas(){
+    public void actualizarMonedas(){
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
+        ArrayList<String> monedasArray = new ArrayList<>();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(direccion + "codes"))
                 .build();
         try {
             HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
             String json = response.body();
-            MonedasDisponibles monedasDisponibles = gson.fromJson(json, MonedasDisponibles.class); 
+            MonedasDisponibles monedasDisponibles = gson.fromJson(json, MonedasDisponibles.class);
+
+            for (int i = 0; i < monedasDisponibles.supportedCodes().length; i++){
+                String opcion = monedasDisponibles.supportedCodes()[i][0] + "-" + monedasDisponibles.supportedCodes()[i][1];
+                monedasArray.add(opcion);
+            }
+            for (String opcion : monedasArray) {
+                conversor.monedaInicio.addElement(opcion);
+                conversor.monedaDestino.addElement(opcion);
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public String[] solicitarTipoDeCambio(){
+    // Este metodo solicida al Api el tipo de cambio que el cliente elija en los menus desplegables
+
+    public double solicitarTipoDeCambio(String moneda1, String moneda2){
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
-        JComboBox<String> comboBoxBase = new JComboBox<>(monedas);
-        JComboBox<String> comboBoxCambio = new JComboBox<>(monedas);
         TipoDeCambio tipoDeCambio;
-
-
-        int monedaBase = JOptionPane.showConfirmDialog(null, comboBoxBase, "Selecciona una moneda base",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        int monedaCambio = JOptionPane.showConfirmDialog(null, comboBoxCambio, "Selecciona una moneda cambio",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(direccion + "pair/" + monedas[comboBoxBase.getSelectedIndex()] + "/" + monedas[comboBoxCambio.getSelectedIndex()]))
+                .uri(URI.create(direccion + "pair/" + moneda1 + "/" + moneda2))
                 .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -58,10 +67,30 @@ public class Consultas {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        String[] tipoDeCambioArray = {String.valueOf(tipoDeCambio.conversionRate()), monedas[comboBoxBase.getSelectedIndex()], monedas[comboBoxCambio.getSelectedIndex()]};
+        double tipoDeCambioDouble = tipoDeCambio.conversionRate();
+        return  tipoDeCambioDouble;
+    }
 
 
-        return  tipoDeCambioArray;
+    public double[] conversion(String moneda1, String moneda2, double monto){
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        TipoDeCambio tipoDeCambio;
 
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(direccion + "pair/" + moneda1 + "/" + moneda2 + "/" + monto))
+                .build();
+        TipoDeCambio tipoDeCambio2;
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
+            tipoDeCambio2 = gson.fromJson(json, TipoDeCambio.class);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        double conversionResult = tipoDeCambio2.conversionResult();
+        double conversionRate = tipoDeCambio2.conversionRate();
+        return new double[]{conversionRate, conversionResult};
     }
 }
