@@ -15,13 +15,21 @@ import java.util.ArrayList;
 
 public class Consultas {
 
-    ArrayList<String> monedas = new ArrayList<>();
-    HttpClient client = HttpClient.newHttpClient();
-    String direccion = "https://v6.exchangerate-api.com/v6/87bd9b17f46d2a4580299e29/";
-    Conversor conversor = new Conversor();
+    private ArrayList<String> monedas = new ArrayList<>();
+    private HttpClient client = HttpClient.newHttpClient();
+    private String direccion = "https://v6.exchangerate-api.com/v6/87bd9b17f46d2a4580299e29/";
+
+
+    // Este metodo devuelve las monedas en un formato facil de leer, gracias al String builder
+    public String getMonedas() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String lista : monedas){
+            stringBuilder.append(lista).append("\n");
+        }
+        return stringBuilder.toString();
+    }
 
     //  Este metodo de aqui se encarga de actualizar las listas de monedas a las disponibles.
-
     public void actualizarMonedas(){
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -38,11 +46,9 @@ public class Consultas {
             for (int i = 0; i < monedasDisponibles.supportedCodes().length; i++){
                 String opcion = monedasDisponibles.supportedCodes()[i][0] + "-" + monedasDisponibles.supportedCodes()[i][1];
                 monedasArray.add(opcion);
+
             }
-            for (String opcion : monedasArray) {
-                conversor.monedaInicio.addElement(opcion);
-                conversor.monedaDestino.addElement(opcion);
-            }
+            monedas = monedasArray;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -71,6 +77,11 @@ public class Consultas {
         return  tipoDeCambioDouble;
     }
 
+
+    /*
+    Este metodo realiza la conversion de monedas, por medio de una request a la API, al inicio pense hacerlo a mano y hacer los calculos pero
+    para optimizar el codigo y hacerlo mas eficiente descubri en la documentacion de que la API ya nos incluye un request para esto
+    */
 
     public double[] conversion(String moneda1, String moneda2, double monto){
         Gson gson = new GsonBuilder()
