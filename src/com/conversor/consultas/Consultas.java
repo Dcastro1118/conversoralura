@@ -1,12 +1,11 @@
 package com.conversor.consultas;
 
-import com.conversor.Conversor;
 import com.conversor.modelos.MonedasDisponibles;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.conversor.modelos.TipoDeCambio;
-import javax.swing.*;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

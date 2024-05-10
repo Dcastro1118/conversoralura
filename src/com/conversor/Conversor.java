@@ -91,7 +91,8 @@ public class Conversor {
                 System.out.println("Codigos de monedas disponibles: \n" + consulta.getMonedas());
                 break;
             case 4:
-                System.out.println(mostrarHistorial());
+                String historial = mostrarHistorial();
+                System.out.println(historial);
                 break;
             case 5:
                 System.exit(0);
@@ -105,13 +106,17 @@ public class Conversor {
     static String mostrarHistorial(){
     StringBuilder stringBuilder = new StringBuilder();
     int contador = 1;
-    for (Historial historial : historiales) {
-        stringBuilder.append("#" + contador + "\nConversion de " + historial.getMontoBase() + " " + historial.getMonedaBase() + " A "
-                + historial.getMonedaCambio() + "\nFecha:" + historial.getFecha() +
-                "\nMonto en moneda destino:  " + historial.getMontoCambio() + " " +historial.getMonedaCambio() + "\n");
-        contador++;
+    if (!historiales.isEmpty()) {
+        for (Historial historial : historiales) {
+            stringBuilder.append("#" + contador + "\nConversion de " + historial.getMontoBase() + " " + historial.getMonedaBase() + " A "
+                    + historial.getMonedaCambio() + "\nFecha:" + historial.getFecha() +
+                    "\nMonto en moneda destino:  " + historial.getMontoCambio() + " " + historial.getMonedaCambio() + "\n");
+            contador++;
+        }
+        return stringBuilder.toString();
+    } else {
+        return "Historial vacio";
     }
-    return stringBuilder.toString();
     }
     }
 
