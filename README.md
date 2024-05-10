@@ -13,9 +13,13 @@ Manual de usuario:
 La primer pantalla que se nos muestra es un menu de opciones, este menu de opciones esta conformado por 5 opciones:
 
 1.Consultar tipo de cambio: En esta opcion podremos saber cual es el tipo de cambio actual entre dos monedas.
+
 2.Convertir un monto de una moneda a otra: En esta opcion podemos saber cual seria la conversion de un monto en especifico de una moneda a otra.
+
 3.Consultar los codigos de monedas: En esta seccion podemos consultar cuales son las monedas disponibles
+
 4.Historial de conversiones: Aqui podemos ver un historial de las conversiones que hemos realizado previamente
+
 5.Salir: con esta opcion cerramos el programa
 
 Una vez decidimos cual es la accion que vamos a realizar debemos tener cuidado al ingresar los datos, en los codigos de las monedas no deben estar en mayusculas, pero si es importante que este el codigo completo, los 3 digitos.
