@@ -29,6 +29,7 @@ public class Conversor {
                     "3. Consultar los codigos de monedas \n" +
                     "4. Historial de conversiones \n" +
                     "5. Salir \n" +
+                    "Si necesitas conocer los codigos de monedas que tenemos disponibles los puedes consultar en la seccion 3.\n" +
                     "Ingrese un numero segun la opcion que desee realizar:");
             try {
                 opcion = Integer.parseInt(scanner.next());
